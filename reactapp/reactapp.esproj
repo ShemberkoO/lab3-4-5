@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.94-alpha">
+  <PropertyGroup>
+    <StartupCommand>npm run dev</StartupCommand>
+    <JavaScriptTestRoot>src\</JavaScriptTestRoot>
+    <JavaScriptTestFramework>Jest</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Command to create an optimized build of the project that's ready for publishing -->
+    <ProductionBuildCommand>npm run build</ProductionBuildCommand>
+    <!-- Folder where production build objects will be placed -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\Components\NewFolder\" />
+    <Folder Include="src\Components\People\" />
+    <Folder Include="src\Pages\Home\" />
+    <Folder Include="src\Components\Victims\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="src\Components\NewFolder2\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="src\Components\NewFolder2\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="src\Components\NewFolder3\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="src\Components\NewFolder3\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="src\Components\NewFolder1\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="src\Components\NewFolder1\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="src\Components\NewFolder4\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="src\Components\NewFolder4\**" />
+  </ItemGroup>
+</Project>
