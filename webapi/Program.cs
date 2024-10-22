@@ -1,5 +1,7 @@
 using webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using YourNamespace.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,25 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
+
+builder.Services.AddScoped<IAccidentRepository, AccidentRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "DTP lab3-4-5",
+        Description = "Це API створене з допомогою фреймворку ASP .NET.<br/>" +
+        "Призначене для ведення обліку ДТП.<br/>" +
+        "Дoступний функціонал:<br/>" +
+        "1) CRUD для Accidents.<br/>" +
+        "2) CRUD для people."
+    });
+});
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -42,6 +42,22 @@ export default function AccidentsForm({ accident, open, onClose }) {
                 })
                 .catch(error => {
                     console.error('Помилка при редагуванні інциденту:', error);
+                    if (error.response && error.response.status === 400) {
+                        // Отримуємо список помилок з відповіді сервера
+                        const errorMessages = error.response.data.errors;
+
+                        // Формуємо одне повідомлення з усіх помилок
+                        let fullErrorMessage = '';
+                        for (const field in errorMessages) {
+                            if (errorMessages.hasOwnProperty(field)) {
+                                fullErrorMessage += `${field}: ${errorMessages[field].join(', ')}\n`;
+                            }
+                        }
+
+                        // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
+                        alert(fullErrorMessage);
+                    }
+                    onClose();
                 });
         } else {
             axios.post('/api/Accidents', formData)
@@ -50,7 +66,23 @@ export default function AccidentsForm({ accident, open, onClose }) {
                     onClose();
                 })
                 .catch(error => {
-                    console.error('Помилка при створенні інциденту:', error);
+                    console.error('Помилка при створенні інциденту:', error.response);
+                    if (error.response && error.response.status === 400) {
+                        // Отримуємо список помилок з відповіді сервера
+                        const errorMessages = error.response.data.errors;
+
+                        // Формуємо одне повідомлення з усіх помилок
+                        let fullErrorMessage = '';
+                        for (const field in errorMessages) {
+                            if (errorMessages.hasOwnProperty(field)) {
+                                fullErrorMessage += `${field}: ${errorMessages[field].join(', ')}\n`;
+                            }
+                        }
+
+                        // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
+                        alert(fullErrorMessage);
+                    }
+                    onClose();
                 });
         }
     };

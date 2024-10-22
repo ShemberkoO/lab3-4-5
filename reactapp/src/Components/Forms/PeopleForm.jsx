@@ -44,10 +44,27 @@ export default function PeopleForm({ person, open, onClose }) {
             // Запит на редагування людини
             axios.put(`/api/Person/${person.pasportId}`, formData)
                 .then(response => {
+
                     console.log('Людину успішно відредаговано:', response.data);
                     onClose();
                 })
                 .catch(error => {
+                    if (error.response && error.response.status === 400) {
+                        // Отримуємо список помилок з відповіді сервера
+                        const errorMessages = error.response.data.errors;
+
+                        // Формуємо одне повідомлення з усіх помилок
+                        let fullErrorMessage = '';
+                        for (const field in errorMessages) {
+                            if (errorMessages.hasOwnProperty(field)) {
+                                fullErrorMessage += `${field}: ${errorMessages[field].join(', ')}\n`;
+                            }
+                        }
+
+                        // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
+                        alert(fullErrorMessage);
+                    }
+                    onClose();
                     console.error('Помилка при редагуванні:', error);
                 });
         } else {
@@ -58,6 +75,22 @@ export default function PeopleForm({ person, open, onClose }) {
                     onClose();
                 })
                 .catch(error => {
+                    if (error.response && error.response.status === 400) {
+                        // Отримуємо список помилок з відповіді сервера
+                        const errorMessages = error.response.data.errors;
+
+                        // Формуємо одне повідомлення з усіх помилок
+                        let fullErrorMessage = '';
+                        for (const field in errorMessages) {
+                            if (errorMessages.hasOwnProperty(field)) {
+                                fullErrorMessage += `${field}: ${errorMessages[field].join(', ')}\n`;
+                            }
+                        }
+
+                        // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
+                        alert(fullErrorMessage);
+                    }
+                    onClose();
                     console.error('Помилка при створенні:', error);
                 });
         }
