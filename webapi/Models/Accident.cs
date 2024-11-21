@@ -11,6 +11,7 @@ public partial class Accident
 
     public string Location { get; set; } = null!;
 
+    public int? NumberOfInjured { get; set; }
 
     public string? Description { get; set; }
 

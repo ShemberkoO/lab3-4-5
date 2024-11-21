@@ -24,6 +24,7 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
+
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
     },
@@ -39,11 +40,11 @@ export default defineConfig({
                 secure: false
             },
             '^/api/Accidents': {
-                target: 'https://localhost:7217', // Backend API для accidents
+                target: 'https://localhost:7217', 
                 secure: false
             },
             '^/api/Person': {
-                target: 'https://localhost:7217', // Backend API для people
+                target: 'https://localhost:7217',
                 secure: false
             }
         }

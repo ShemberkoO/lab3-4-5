@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using webapi.DTOs;
@@ -9,7 +13,8 @@ namespace YourNamespace.Repositories
 {
     public class AccidentRepository : IAccidentRepository
     {
-        private readonly DtpBdLabsContext _context;
+        private static  DtpBdLabsContext _context;
+        private static IDbContextTransaction current_transaction;
 
         public AccidentRepository(DtpBdLabsContext context)
         {
@@ -68,11 +73,14 @@ namespace YourNamespace.Repositories
             return accident;
         }
 
-        public async Task<bool> UpdateAccidentAsync(int id, AccidentDto accidentDto)
+        public async Task<string> UpdateAccidentAsync(int id, AccidentDto accidentDto)
         {
+            if (current_transaction != null) { 
+            
+            }
             if (id != accidentDto.AccidentId)
             {
-                return false;
+                return "params not valid";
             }
 
             var accident = new Accident
@@ -88,18 +96,51 @@ namespace YourNamespace.Repositories
             try
             {
                 await _context.SaveChangesAsync();
-                return true;
+                return "changes saved";
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException err)
             {
-                if (!AccidentExists(id))
+                return "err: " + err.Message;  
+            }
+        }
+        public async Task<string> StartTransactionAsync()
+        {
+            if (current_transaction != null)
+            {
+                try
                 {
-                    return false;
+                    await current_transaction.CommitAsync();
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw;
+                    current_transaction.RollbackAsync();
+                    current_transaction.Dispose();
                 }
+            }
+
+            // Починаємо нову транзакцію з рівнем ізоляції SERIALIZABLE
+            current_transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
+            return "Transaction started.";
+        }
+
+        public async  Task<string> Commit()
+        {
+            if(current_transaction != null)
+            {
+                try
+                {
+                    await current_transaction.CommitAsync();
+                    return "commited succesfully";
+                }catch(Exception e)
+                {
+                    return "err: " + e.Message;
+                }
+                
+            }
+            else
+            {
+                return "no transaction";
             }
         }
 
@@ -136,6 +177,43 @@ namespace YourNamespace.Repositories
                 })
                 .ToListAsync();
         }
+        public async Task<string> DeleteAccidentsBeforeDateAsync(DeleteAccidentsInfo cutoffDate)
+        {
+            if (cutoffDate.Date == default)
+            {
+                return "Invalid date provided.";
+            }
+
+            try
+            {
+                
+                var result = await _context
+                    .Database
+                    .SqlQuery<string>($"SELECT DeleteAccidentsBeforeDate({cutoffDate.Date})")
+                    .ToListAsync();
+
+                return result.FirstOrDefault() ?? "No result returned from the database.";
+            }
+            catch (Exception ex)
+            {
+     
+                return $"Error deleting accidents: {ex.Message}";
+            }
+        }
+
+        public async Task SimulateTransactionConflict()
+        {
+         
+
+           PostgresTransactionConflictSimulator s = new PostgresTransactionConflictSimulator();
+            s.SimulateConflict();
+        }
+
+
+
+
+
+
 
         public async Task<List<PersonDto>> GetPeopleByVictimIdsAsync(List<string> personIds)
         {
@@ -155,6 +233,11 @@ namespace YourNamespace.Repositories
         public bool AccidentExists(int id)
         {
             return _context.Accidents.Any(e => e.AccidentId == id);
+        }
+
+        public void setContext(DtpBdLabsContext context)
+        {
+            _context = context;
         }
     }
 }

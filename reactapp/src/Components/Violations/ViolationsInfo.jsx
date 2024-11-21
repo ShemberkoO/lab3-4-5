@@ -1,5 +1,5 @@
 // PeopleList.jsx
-import React from 'react';
+import {React} from 'react';
 import Violation from './Violation'; // Імпортуємо компонент Person
 
 const ViolationsInfo = ({ violations, isLoading, error }) => {

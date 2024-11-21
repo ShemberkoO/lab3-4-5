@@ -1,5 +1,5 @@
 // AccidentsList.jsx
-import React from 'react';
+import {React} from 'react';
 import AccidentCard from './AccidentCard';
 
 const AccidentsInfo = ({ accidents, isLoading, error }) => {

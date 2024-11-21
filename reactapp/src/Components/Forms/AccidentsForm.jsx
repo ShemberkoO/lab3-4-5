@@ -37,11 +37,11 @@ export default function AccidentsForm({ accident, open, onClose }) {
         if (accident) {
             axios.put(`/api/Accidents/${accident.accidentId}`, { ...formData, AccidentId: accident.accidentId })
                 .then(response => {
-                    console.log('Інцидент успішно відредаговано:', response.data);
+                  
                     onClose();
                 })
                 .catch(error => {
-                    console.error('Помилка при редагуванні інциденту:', error);
+                   
                     if (error.response && error.response.status === 400) {
                         // Отримуємо список помилок з відповіді сервера
                         const errorMessages = error.response.data.errors;
@@ -56,6 +56,9 @@ export default function AccidentsForm({ accident, open, onClose }) {
 
                         // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
                         alert(fullErrorMessage);
+                    }
+                    if (error.response && error.response.status === 401) {
+                        alert(error.response.data.message + error.response.data.details);
                     }
                     onClose();
                 });
@@ -66,7 +69,7 @@ export default function AccidentsForm({ accident, open, onClose }) {
                     onClose();
                 })
                 .catch(error => {
-                    console.error('Помилка при створенні інциденту:', error.response);
+                    console.log(error);
                     if (error.response && error.response.status === 400) {
                         // Отримуємо список помилок з відповіді сервера
                         const errorMessages = error.response.data.errors;
@@ -80,17 +83,21 @@ export default function AccidentsForm({ accident, open, onClose }) {
                         }
 
                         // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
-                        alert(fullErrorMessage);
+                        alert(error.response.data.message);
+                    }
+                    if (error.response && error.response.status === 401) {
+                        alert(error.response.data.message + error.response.data.details);
                     }
                     onClose();
                 });
+
         }
     };
 
     return (
         <BaseModal open={open} onClick={onClose}>
-            <form onSubmit={handleSubmit}>
-                <h5>{accident ? 'Редагування інциденту' : 'Створення інциденту'}</h5>
+            <form onSubmit={handleSubmit} style={{ width: 400 }}>
+                <h5>{accident ? '      Edit accident form      ' : '       Create accident form      '}</h5>
                 <div className="mb-3">
                     <label htmlFor="Date" className="form-label">Date</label>
                     <input
@@ -128,8 +135,8 @@ export default function AccidentsForm({ accident, open, onClose }) {
                     />
                 </div>
                 <div className="d-flex justify-content-between">
-                    <button type="button" className="btn btn-secondary" onClick={onClose}>Закрити</button>
-                    <button type="submit" className="btn btn-primary">Зберегти</button>
+                    <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
+                    <button type="submit" className="btn btn-primary">Save</button>
                 </div>
             </form>
         </BaseModal>

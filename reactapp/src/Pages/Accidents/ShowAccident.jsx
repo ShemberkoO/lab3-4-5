@@ -16,10 +16,43 @@ const ShowAccident = () => {
     const params = useParams();
 
     const [isOpen, setOpen] = useState(false);
+    function showToast(message, duration = 3000) {
+        const toastContainer = document.getElementById('toast-container');
 
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        // Видалити після закінчення часу
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, duration);
+    }
     const handleOpenModal = () => {
+        startTrans();
         setOpen(true);
     }
+    const startTrans = () => {
+        axios.post(`/api/Accidents/StartTrans`)
+            .then(response => {
+                console.log(response.data);
+                showToast(response.data);
+               
+            })
+            .catch(err => {
+                setError('Error starting transaction.');
+                setIsLoading(false);
+            });
+    }
+    
 
     const handleCloseModal = () => {
         getInfo();
@@ -27,7 +60,7 @@ const ShowAccident = () => {
     }
 
     const getInfo = () => {
-        axios.get(`https://localhost:7217/api/Accidents/${params.accidentId}/show`)
+        axios.get(`/api/Accidents/${params.accidentId}/show`)
             .then(response => {
                 console.log(response.data);
                 setAccident(response.data);
@@ -49,7 +82,7 @@ const ShowAccident = () => {
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this person?')) {
-            axios.delete(`https://localhost:7217/api/Accidents/${params.accidentId}`)
+            axios.delete(`/api/Accidents/${params.accidentId}`)
                 .then(() => {
                     navigate('/accidents');
                 })

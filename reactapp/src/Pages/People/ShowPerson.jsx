@@ -29,7 +29,7 @@ const ShowPerson = () => {
     }
 
     const getInfo = () => {
-        axios.get(`https://localhost:7217/api/Person/${params.personId}/show`)
+        axios.get(`/api/Person/${params.personId}/show`)
             .then(response => {
                 console.log(response.data);
                 setPerson(response.data);
@@ -48,7 +48,7 @@ const ShowPerson = () => {
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this person?')) {
-            axios.delete(`https://localhost:7217/api/Person/${params.personId}`)
+            axios.delete(`/api/Person/${params.personId}`)
                 .then(() => {
               
                     navigate('/people');

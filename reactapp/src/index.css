@@ -22,6 +22,25 @@ a:hover {
   color: #535bf2;
 }
 
+.toast {
+    background-color: #323232;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 60px;
+    margin: 5px;
+    border-radius: 5px;
+    z-index: 10;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 body {
   margin: 0;
   display: flex;

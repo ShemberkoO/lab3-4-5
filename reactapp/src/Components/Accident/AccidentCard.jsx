@@ -1,10 +1,9 @@
 // PersonCard.jsx
 import { Button } from 'bootstrap';
-import React from 'react';
+import {React} from 'react';
 import { Link } from 'react-router-dom'
 
 const AccidentCard = ({ accident }) => {
-    console.log(accident)
     return (
         <div className="card mb-3">
             <div className="card-body">
@@ -16,6 +15,7 @@ const AccidentCard = ({ accident }) => {
                     <div>
                         <h3 className="card-title">Id: {accident.accidentId} </h3>
                         <Link className="nav-link" to={`/accidents/${accident.accidentId}`}>Show</Link>
+                        <Link className="nav-link" to={`/accidents/${accident.accidentId}`}></Link>
                     </div>
                 </div>
 

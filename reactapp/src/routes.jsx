@@ -6,6 +6,7 @@ import ShowPerson from './Pages/People/ShowPerson';
 import ShowAccident from './Pages/Accidents/ShowAccident';
 const routes = [
     {
+
         path: '/',
         element: <Home />,
     },

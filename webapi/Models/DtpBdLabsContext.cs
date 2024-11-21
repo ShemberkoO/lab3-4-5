@@ -17,6 +17,10 @@ public partial class DtpBdLabsContext : DbContext
 
     public virtual DbSet<Accident> Accidents { get; set; }
 
+    public virtual DbSet<AccidentAnalysis> AccidentAnalyses { get; set; }
+
+    public virtual DbSet<AccidentAnalysisWithArticle> AccidentAnalysisWithArticles { get; set; }
+
     public virtual DbSet<OccupantTransport> OccupantTransports { get; set; }
 
     public virtual DbSet<Person> People { get; set; }
@@ -29,7 +33,7 @@ public partial class DtpBdLabsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=dtp_bd_labs;Username=postgres;Password=45685293");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=45685293;Database=dtp_bd_labs;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +45,8 @@ public partial class DtpBdLabsContext : DbContext
 
             entity.ToTable("accidents");
 
+            entity.HasIndex(e => e.Location, "idx_accidents_location");
+
             entity.Property(e => e.AccidentId).HasColumnName("accident_id");
             entity.Property(e => e.Date)
                 .HasDefaultValueSql("CURRENT_DATE")
@@ -49,6 +55,39 @@ public partial class DtpBdLabsContext : DbContext
             entity.Property(e => e.Location)
                 .HasMaxLength(255)
                 .HasColumnName("location");
+            entity.Property(e => e.NumberOfInjured)
+                .HasDefaultValueSql("0")
+                .HasColumnName("number_of_injured");
+        });
+
+        modelBuilder.Entity<AccidentAnalysis>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("accident_analysis");
+
+            entity.Property(e => e.AccidentId).HasColumnName("accident_id");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Location)
+                .HasMaxLength(255)
+                .HasColumnName("location");
+            entity.Property(e => e.VictimCount).HasColumnName("victim_count");
+        });
+
+        modelBuilder.Entity<AccidentAnalysisWithArticle>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("accident_analysis_with_articles");
+
+            entity.Property(e => e.AccidentId).HasColumnName("accident_id");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Location)
+                .HasMaxLength(255)
+                .HasColumnName("location");
+            entity.Property(e => e.VictimCount).HasColumnName("victim_count");
+            entity.Property(e => e.Violations).HasColumnName("violations");
+            entity.Property(e => e.ViolationsNum).HasColumnName("violations_num");
         });
 
         modelBuilder.Entity<OccupantTransport>(entity =>
@@ -56,6 +95,10 @@ public partial class DtpBdLabsContext : DbContext
             entity.HasKey(e => e.VictimId).HasName("occupant_transport_pkey");
 
             entity.ToTable("occupant_transport");
+
+            entity.HasIndex(e => e.TransportId, "idx_occupant_transport_transport_id");
+
+            entity.HasIndex(e => e.VictimId, "idx_occupant_transport_victim_id");
 
             entity.Property(e => e.VictimId)
                 .ValueGeneratedNever()
@@ -79,6 +122,12 @@ public partial class DtpBdLabsContext : DbContext
             entity.HasKey(e => e.PasportId).HasName("person_pkey");
 
             entity.ToTable("person");
+
+            entity.HasIndex(e => new { e.FirstName, e.LastName }, "idx_person_full_name");
+
+            entity.HasIndex(e => e.LastName, "idx_person_last_name");
+
+            entity.HasIndex(e => e.PasportId, "idx_person_pasport_id_hash").HasMethod("hash");
 
             entity.Property(e => e.PasportId)
                 .HasMaxLength(50)
@@ -132,6 +181,12 @@ public partial class DtpBdLabsContext : DbContext
 
             entity.ToTable("victims");
 
+            entity.HasIndex(e => e.AccidentId, "idx_victims_accident_id");
+
+            entity.HasIndex(e => e.PasportId, "idx_victims_pasport_id");
+
+            entity.HasIndex(e => e.Status, "idx_victims_status");
+
             entity.Property(e => e.VictimId).HasColumnName("victim_id");
             entity.Property(e => e.AccidentId).HasColumnName("accident_id");
             entity.Property(e => e.PasportId)
@@ -158,6 +213,8 @@ public partial class DtpBdLabsContext : DbContext
             entity.HasKey(e => e.ViolationId).HasName("violations_pkey");
 
             entity.ToTable("violations");
+
+            entity.HasIndex(e => e.VictimId, "idx_violations_victim_id");
 
             entity.Property(e => e.ViolationId).HasColumnName("violation_id");
             entity.Property(e => e.Article)

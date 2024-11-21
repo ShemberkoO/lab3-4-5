@@ -44,7 +44,6 @@ export default function PeopleForm({ person, open, onClose }) {
             // Запит на редагування людини
             axios.put(`/api/Person/${person.pasportId}`, formData)
                 .then(response => {
-
                     console.log('Людину успішно відредаговано:', response.data);
                     onClose();
                 })
@@ -87,7 +86,6 @@ export default function PeopleForm({ person, open, onClose }) {
                             }
                         }
 
-                        // Виводимо повідомлення користувачу (наприклад, через alert або у ваш UI)
                         alert(fullErrorMessage);
                     }
                     onClose();
@@ -96,10 +94,11 @@ export default function PeopleForm({ person, open, onClose }) {
         }
     };
 
+
     return (
         <BaseModal open={open} onClick={onClose}>
-            <form onSubmit={handleSubmit}>
-                <h5>{person ? 'Редагування людини' : 'Створення людини'}</h5>
+            <form style={{ width: 400 }} onSubmit={handleSubmit}>
+                <h5>{person ? '       Edit person form       ' : '       Create person form     '}</h5>
                 <div className="mb-3">
                     <label htmlFor="PasportId" className="form-label">Passport ID</label>
                     <input
@@ -165,8 +164,8 @@ export default function PeopleForm({ person, open, onClose }) {
                     />
                 </div>
                 <div className="d-flex justify-content-between">
-                    <button type="button" className="btn btn-secondary" onClick={onClose}>Закрити</button>
-                    <button type="submit" className="btn btn-primary">Зберегти</button>
+                    <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
+                    <button type="submit" className="btn btn-primary">Save</button>
                 </div>
             </form>
         </BaseModal>
